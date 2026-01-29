@@ -67,10 +67,11 @@ async def check_single_link(
     parsed = urlparse(link)
     if parsed.scheme in ("http", "https"):
         return await check_http_link(link, session)
-    elif parsed.scheme == "" or parsed.scheme == "file":
+    if parsed.scheme == "" or parsed.scheme == "file":
         return await check_local_link(link, sources)
-    else:
-        return LinkCheckResult(link, False, f"Unsupported scheme: {parsed.scheme}")
+    if parsed.scheme == "mailto":
+        return LinkCheckResult(link, True, "Mailto link, not checked")
+    return LinkCheckResult(link, False, f"Unsupported scheme: {parsed.scheme}")
 
 
 async def check_http_link(
